@@ -8,44 +8,62 @@ const createElementDom = function (type, attribute, attributeName){
     return elmnt;
 }
 
-const createProject = function() {
+const createProjectForm = function(mainArr) {
 
     let arr = [];
-    const createMain = createElementDom("div", "id", "create_project_main");
-    const createForm = createElementDom("form","action","gh");
-    createForm.setAttribute("method","post");
-    createMain.appendChild(createForm);
-    const createFieldset = document.createElement("fieldset");
-    createForm.appendChild(createFieldset);
-    const mainText = document.createElement("legend");
-    mainText.textContent = "New Project";
-    createForm.appendChild(mainText);
-    const in1Div = document.createElement("div");
-    const label1 = createElementDom("label","for","project_name");
-    label1.textContent = "Project Name";
-    const input1 = createElementDom("input","id","project_name");
-    input1.setAttribute("type","text");
-    createForm.appendChild(in1Div);
-    in1Div.appendChild(label1);
-    in1Div.appendChild(input1);
-    const in2Div = document.createElement("div");
-    const label2 = createElementDom("labe2","for","project_DueDate");
-    label2.textContent = "Due Date";
-    const input2 = createElementDom("input","id","project_name");
-    input2.setAttribute("type","date");
-    createForm.appendChild(in2Div);
-    in2Div.appendChild(label2);
-    in2Div.appendChild(input2);
+    let prjct;
+    const elms = 
+    `<div id="create_project_form">
+        <form id="project_form" action="#gh" method="post">
+            <fieldset id="fieldset_project">
+                <legend>Create New Project</legend>
+                <div class="in">
+                    <label for="title" class="label">Project Name</label>
+                    <input type="text" id="title" minlength="5" maxlength="25" required>
+                </div>
+                <div class="in">
+                    <label for="due_date" class="label">Due Date</label>
+                    <input type="date" id="due_date"  required>
+                </div>
+                <div class="in">
+                    <textarea rows="5" cols="60" id=""notes placeholder = "Notes For Project"></textarea>
+                </div>
+                <span id="error" ></span>
+            </fieldset>
+        </form>
+    </div>`;
+    
+    insertHtml("#content", elms);
+    const input1 = document.querySelector("#title");
+    const input2 = document.querySelector("#due_date");
+    const fieldset = document.querySelector("#fieldset_project");
+    const error = document.querySelector("#error");
     const btn = createElementDom("button","type","button");
-    createForm.appendChild(btn);
+    fieldset.appendChild(btn);
+    btn.setAttribute("id","create_project_btn");
+    btn.textContent = "Create";
     btn.addEventListener("click",() => {
-
-        const prjct = new project(`${input1.value}`,`${input2.value}`,arr)
-        console.log(prjct);
-    })
-
-    return createMain;
-
+        if(input1.value == ""){
+            error.textContent = "Please Add a Title";
+        } else if (input2.value == ""){
+            error.textContent = "Please Add a Due Date";
+        }    else {
+            createProject(input1.value,input2.value,arr,mainArr);
+            console.log(mainArr);
+        }
+    });
 }
 
-export {createElementDom, createProject};
+function createProject(val1, val2, arr,mainArr){
+    const prjct = new project(val1,val2, arr)
+    mainArr.push(prjct);
+} 
+
+function insertHtml(targetElm, Elms) {
+
+    const target = document.querySelector(targetElm);
+    target.innerHTML += Elms;
+    
+}
+
+export {createElementDom, createProjectForm, insertHtml};
