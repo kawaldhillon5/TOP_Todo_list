@@ -11,6 +11,18 @@ class project {
     addItem = function(Todo_item){
         this.arr.push(Todo_item);
     }
+
+    getProjectName = function(){
+        return this.name;
+    }
+
+    getProjectDueDate = function(){
+        return this.projectDueDate;
+    }
+
+    getProjectToDoList = function(){
+        return this.arr;
+    }
 }
 
 
