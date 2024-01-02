@@ -1,5 +1,7 @@
 import project from "../project/project";
-import { createElementDom } from "../functions/functions";
+import { createElementDom, todayDate, getDueDateComp } from "../functions/functions";
+import { compareAsc } from "date-fns";
+
 
 class myProject {
 
@@ -14,11 +16,16 @@ class myProject {
     getfunction = function(mainArr){
 
         const target = document.createElement("div");
+        const head = createElementDom("div","class","content_head");
+        head.textContent = this.name;
+        target.appendChild(head);
+        const projectsDiv = createElementDom("div","class","projects_div");
+        target.appendChild(projectsDiv);
 
         mainArr.forEach(element => {
             
             const projectDiv = createElementDom("div","class","project_div")
-            target.appendChild(projectDiv);
+            projectsDiv.appendChild(projectDiv);
 
             const name = createElementDom("div","class","project_name");
             name.textContent = `${element.getProjectName()}`;
@@ -44,7 +51,30 @@ class today {
     }
 
     getfunction = function(mainArr){
-        const target = document.createElement("#div");
+        const target = document.createElement("div");
+        const head = createElementDom("div","class","content_head");
+        head.textContent = this.name;
+        target.appendChild(head);
+        const projectsDiv = createElementDom("div","class","projects_div");
+        target.appendChild(projectsDiv);
+
+        mainArr.forEach(element =>{
+
+            if(compareAsc((todayDate()),(getDueDateComp(element.getProjectDueDate()))) == "0") {
+                const projectDiv = createElementDom("div","class","project_div")
+                projectsDiv.appendChild(projectDiv);
+
+                const name = createElementDom("div","class","project_name");
+                name.textContent = `${element.getProjectName()}`;
+                projectDiv.appendChild(name);
+
+                const dueDate = createElementDom("div","class","project_dueDate")
+                dueDate.textContent = `${element.getProjectDueDate()}`
+                projectDiv.appendChild(dueDate);
+
+            }
+
+        });
 
         return target;
     }
@@ -62,7 +92,30 @@ class upcoming {
     }
 
     getfunction = function(mainArr){
-        const target = document.createElement("#div");
+        const target = document.createElement("div");
+        const head = createElementDom("div","class","content_head");
+        head.textContent = this.name;
+        target.appendChild(head);
+        const projectsDiv = createElementDom("div","class","projects_div");
+        target.appendChild(projectsDiv);
+
+        mainArr.forEach(element =>{
+
+            if(compareAsc((todayDate()),(getDueDateComp(element.getProjectDueDate()))) == "-1") {
+                const projectDiv = createElementDom("div","class","project_div")
+                projectsDiv.appendChild(projectDiv);
+
+                const name = createElementDom("div","class","project_name");
+                name.textContent = `${element.getProjectName()}`;
+                projectDiv.appendChild(name);
+
+                const dueDate = createElementDom("div","class","project_dueDate")
+                dueDate.textContent = `${element.getProjectDueDate()}`
+                projectDiv.appendChild(dueDate);
+
+            }
+
+        });
 
         return target;
     }
@@ -80,7 +133,11 @@ class search {
     }
 
     getfunction = function(mainArr){
-        const target = document.createElement("#div");
+        const target = document.createElement("div");
+        const head = createElementDom("div","class","content_head");
+        head.textContent = this.name;
+        target.appendChild(head);
+
 
         return target;
     }

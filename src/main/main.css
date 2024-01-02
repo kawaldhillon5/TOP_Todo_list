@@ -12,6 +12,7 @@ html,body{
     padding: 0;
     height: 100%;
     font-family: myFont;
+    
 }
 
 body{
@@ -90,12 +91,13 @@ a{
 
 #page_content{
     position: relative;
+
 }
 
 #add_btn{
     position: absolute;
-    bottom: 40px;
-    right: 40px;
+    bottom: 100px;
+    right: 100px;
     align-items: center;
     appearance: none;
     background-color: var(--secondary-color);
@@ -127,4 +129,38 @@ a{
     will-change: transform,opacity;
     z-index: 0;
     font-size: 20px;
+}
+
+#home_content {
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr;
+
+}
+
+.navLinkContent {
+
+    padding: 20px;
+    margin-bottom: 20px;
+
+}
+
+.content_head {
+    font-size: 30px;
+    margin-bottom: 20px;
+}
+.projects_div{
+    resize: both;
+    overflow: auto;
+    display: grid;
+    gap: 4px;
+    grid-template-rows: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    max-height: 500px;
+    
+}
+.project_div{
+    padding: 20px;
+    margin-bottom: 10px;
 }

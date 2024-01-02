@@ -1,21 +1,28 @@
-import { createElementDom, insertHtml } from "../functions/functions";
+import { createElementDom, insertHtml, todayDate,getDueDateComp} from "../functions/functions";
 import project from "../project/project";
 import todo_item from "../todo_item/todo_item";
 import {search, upcoming, today, myProject} from "../link_functions/link";
+import { isDate, compareAsc, formatDistanceStrict } from "date-fns";
 
 const Main = (function(){
     
     let projectArr = [];
     let navHead = "Home";
     let selected;
+    const link1 = new myProject("My Project") 
+    const link2 = new today("Today") 
+    const link3 =  new upcoming("Upcoming") 
+    const link4 = new search("Search");
 
     const run = function(){
 
         navFnc.displayNavHeading(navHead);
-        navFnc.displayNavLinks(projectArr);
+        navFnc.displayNavLinks(projectArr, link1,link2,link4,link3);
         const addButton = document.querySelector("#add_btn")
         addButton.addEventListener("click", () =>{CreateProjectFnc.createProjectForm(projectArr);});
-        
+        homeFnc(projectArr,link2,link3);
+        const home = document.querySelector("#nav_heading");
+        home.addEventListener("click", () => homeFnc(projectArr, link2, link3));
     }
 
     return {run};
@@ -30,10 +37,10 @@ const navFnc = (function(){
         navHeading.textContent = `${head}`;
     }
 
-    const displayNavLinks  = function(mainArr){
+    const displayNavLinks  = function(mainArr,...links){
         const navLinks = document.querySelector("#nav_links");
-        const target = document.querySelector("#page_content_projects");
-        const links = [new myProject("My Project"),new today("Today"), new upcoming("Upcoming"), new search("Search")];
+        navLinks.textContent = "";
+        const target = document.querySelector("#page_content");
         links.forEach((link)=>{
             const elm = createElementDom("div","class","nav_link");
             elm.textContent = `${link.getName()}`;
@@ -53,6 +60,7 @@ const CreateProjectFnc = (function(){
 
     const createProjectForm = function(mainArr) {
 
+        clearForm();
         let arr = [];
         const elms = 
         `<div id="create_project_form">
@@ -75,7 +83,7 @@ const CreateProjectFnc = (function(){
             </form>
         </div>`;
         
-        insertHtml("#page_content_form", elms);
+        insertHtml("#page_content", elms);
         const input1 = document.querySelector("#title");
         const input2 = document.querySelector("#due_date");
         const fieldset = document.querySelector("#fieldset_project");
@@ -103,7 +111,7 @@ const CreateProjectFnc = (function(){
     
     function clearForm() {
     
-        const form  = document.querySelector("#page_content_form");
+        const form  = document.querySelector("#page_content");
         form.textContent = "";
     
     }     
@@ -112,5 +120,19 @@ const CreateProjectFnc = (function(){
 
 })();
 
+const homeFnc = function(mainArr, ...links){
+
+    const projectContentHome = document.querySelector("#page_content");
+    projectContentHome.textContent = "";
+    const homeContent = createElementDom("div","id","home_content");
+    projectContentHome.appendChild(homeContent);
+    links.forEach((link) => {
+        const navLinkContent = createElementDom("div","class","NavLinkContent");
+        navLinkContent.appendChild(link.getfunction(mainArr));
+        homeContent.appendChild(navLinkContent);
+    })
+    
+
+};
 
 export default Main;
