@@ -1,11 +1,15 @@
 class todo_item {
-    constructor(projectName,title, activity, dueDate, priority, notes){
-        this.projectName = projectName;
+    constructor(title, desc){
         this.title = title;
-        this.activity = activity;
-        this.dueDate = dueDate;
-        this.notes = notes;
-        this.priority = priority;
+        this.desc = desc;
+    }
+
+    getTitle (){
+        return this.title;
+    }
+
+    getDesc() {
+        return this.desc;
     }
 };
 

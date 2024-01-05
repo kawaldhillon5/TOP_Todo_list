@@ -1,6 +1,7 @@
 import project from "../project/project";
-import { createElementDom, todayDate, getDueDateComp, insertHtml } from "../functions/functions";
+import { createElementDom, todayDate, getDueDateComp, insertHtml, appendProject } from "../functions/functions";
 import { compareAsc } from "date-fns";
+import todo_item from "../todo_item/todo_item";
 
 
 class myProject {
@@ -23,17 +24,9 @@ class myProject {
         target.appendChild(projectsDiv);
 
         mainArr.forEach(element => {
-            
-            const projectDiv = createElementDom("div","class","project_div")
-            projectsDiv.appendChild(projectDiv);
 
-            const name = createElementDom("div","class","project_name");
-            name.textContent = `${element.getProjectName()}`;
-            projectDiv.appendChild(name);
+            projectsDiv.appendChild(appendProject(element));
 
-            const dueDate = createElementDom("div","class","project_dueDate")
-            dueDate.textContent = `${element.getProjectDueDate()}`
-            projectDiv.appendChild(dueDate);
         });
         return target;
     }
@@ -210,7 +203,6 @@ const CreateProjectFnc = (function(){
 
     const createProjectForm = function(mainArr) {
 
-        let arr = [];
         const elms = 
         `<div id="create_project_form">
             <form id="project_form" action="#gh" method="post">
@@ -224,7 +216,7 @@ const CreateProjectFnc = (function(){
                         <input type="date" id="due_date"  required>
                     </div>
                     <div class="in">
-                        <textarea rows="5" cols="60" id=""notes placeholder = "Notes For Project"></textarea>
+                        <textarea rows="5" cols="60" id="notes" placeholder = "Notes For Project"></textarea>
                     </div>
                     <span id="error" ></span>
                 </fieldset>
@@ -239,23 +231,79 @@ const CreateProjectFnc = (function(){
         const btn = createElementDom("button","type","button");
         fieldset.appendChild(btn);
         btn.setAttribute("id","create_project_btn");
-        btn.textContent = "Create";
+        btn.textContent = "Next";
         btn.addEventListener("click",() => {
             if(input1.value == ""){
                 error.textContent = "Please Add a Title";
             } else if (input2.value == ""){
                 error.textContent = "Please Add a Due Date";
             }    else {
-                createProject(input1.value,input2.value,arr,mainArr);
+                createProject(input1.value,input2.value, mainArr);
             }
         });
     }
     
-    function createProject(val1, val2, arr,mainArr){
+    function createProject(val1, val2, mainArr){
+
+        const arr = [];
         const prjct = new project(val1,val2, arr)
         mainArr.push(prjct);
-        formMessage();
-    } 
+        createTodoList(prjct);
+
+    }
+    
+    function createTodoList(project) {
+
+        const elms = 
+        `<div id="create_todo_form">
+            <form id="todo_form" action="#gh" method="post">
+                <fieldset id="fieldset_todo">
+                    <div class="in">
+                        <label for="todo_item_title" class="label">Things To Do</label>
+                        <input type="text" id="todo_item_title" minlength="5" maxlength="100">
+                    </div>
+                    <div class="in">
+                        <textarea rows="5" cols="60" id="todo_item_desc" placeholder = "Description"></textarea>
+                    </div>
+                    <span id="error" ></span>
+                </fieldset>
+            </form>
+        </div>`;
+        const target = document.querySelector("#form_content");
+        target.textContent = "";
+        insertHtml("#form_content",elms);
+        const input1 = document.querySelector("#todo_item_title");
+        const input2 = document.querySelector("#todo_item_desc");
+        const fieldset = document.querySelector("#fieldset_todo");
+        const error = document.querySelector("#error");
+        const btn = createElementDom("button","type","button");
+        fieldset.appendChild(btn);
+        btn.setAttribute("id","create_todo_btn");
+        btn.textContent = "Add";
+        const btn1 = createElementDom("button","type","button");
+        fieldset.appendChild(btn1);
+        btn1.setAttribute("id","done_btn");
+        btn1.textContent = "Done";
+        btn.addEventListener("click", () =>{
+
+            if(input1.value == ""){
+                error.textContent = "Please Add a thing to do";
+            } else {
+                const td = new todo_item(`${input1.value}`,`${input2.value}`);
+                project.addItem(td);
+                error.textContent = "";
+                createTodoList(project);
+            }
+
+        });
+
+        btn1.addEventListener("click", () =>{
+
+            formMessage();
+
+        });
+
+    }
 
     function formMessage(){
         const target = document.querySelector("#page_content");

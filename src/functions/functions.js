@@ -1,4 +1,4 @@
-import project from "../project/project";
+// import project from "../project/project";
 import { isDate,format } from "date-fns";
 const createElementDom = function (type, attribute, attributeName){
 
@@ -31,4 +31,40 @@ function getDueDateComp(date){
     return date =   `${year}/${month}/${day}`; 
 }
 
-export {createElementDom, insertHtml, todayDate, getDueDateComp};
+function appendProject(element){
+
+    const projectDiv = createElementDom("div","class","project_div")
+
+    const name = createElementDom("div","class","project_name");
+    name.textContent = `${element.getProjectName()}`;
+    projectDiv.appendChild(name);
+
+    const dueDate = createElementDom("div","class","project_dueDate")
+    dueDate.textContent = `${element.getProjectDueDate()}`
+    projectDiv.appendChild(dueDate);
+
+    projectDiv.addEventListener("click", () =>{
+
+        const listDiv = createElementDom("div","class","list_div");
+        projectDiv.appendChild(listDiv);
+
+        element.getProjectToDoList().forEach(elm => {
+            const listItem = createElementDom("div","class","list_item");
+            listDiv.appendChild(listItem);
+            const listTitle = createElementDom("div", "class", "listName");
+            listTitle.textContent = elm.getTitle();
+            listItem.appendChild(listTitle);
+            if(!(elm.getDesc() === "")){
+                const listDesc = createElementDom("div","class","list_desc");
+                listDesc.textContent = elm.getDesc();
+                listItem.appendChild(listDesc);
+            }
+        });
+
+    })
+
+    return projectDiv;
+
+}
+
+export {createElementDom, insertHtml, todayDate, getDueDateComp, appendProject};
