@@ -1,13 +1,14 @@
 
-import {search, upcoming, today, myProject, addProject ,navFnc, homeFnc, CreateProjectFnc} from "../link_functions/link";
+import {search, upcoming, today, myProject, addProject ,navFnc, homeFnc, ProjectArr, } from "../link_functions/link";
+import { lStorage } from "../functions/functions";
 
 
 const Main = (function(){
-    
-    let projectArr = [];
+    const arr = lStorage.load();
+    const projectArr = new ProjectArr(arr);
     let navHead = "Home";
     const link0 = new addProject("Add Project");
-    const link1 = new myProject("My Project") 
+    const link1 = new myProject("My Projects") 
     const link2 = new today("Today") 
     const link3 =  new upcoming("Upcoming") 
     const link4 = new search("Search");

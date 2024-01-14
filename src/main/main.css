@@ -12,7 +12,6 @@ html,body{
     padding: 0;
     height: 100%;
     font-family: myFont;
-    
 }
 
 body{
@@ -98,8 +97,6 @@ a{
     
 }
 
-
-
 #home_content {
 
     display: grid;
@@ -115,17 +112,23 @@ a{
 
 }
 
+#my_projects_div {
+    max-height: 600px;
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 4fr;
+}
+
 .content_head {
     font-size: 30px;
     margin-bottom: 20px;
 }
 .projects_div{
-    overflow: auto;
     display: grid;
+    overflow: auto;
     gap: 4px;
-    grid-template-rows: repeat(2, 1fr);
+    grid-template-rows: repeat(1, 1fr);
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    max-height: 500px;
     
 }
 .project_div{

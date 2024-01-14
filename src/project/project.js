@@ -1,10 +1,10 @@
-import todo_item from "../todo_item/todo_item";
-import createElement from "../functions/functions";
+import "./project.css";
 
 class project {
-    constructor(name,projectDueDate,arr){
+    constructor(name,projectDueDate,notes,arr){
         this.name = name;
         this.projectDueDate = projectDueDate;
+        this.notes = notes;
         this.arr = arr;
         
     }
@@ -16,6 +16,10 @@ class project {
         return this.name;
     }
 
+    getProjectNotes(){
+        return this.notes;
+    }
+
     getProjectDueDate = function(){
         return this.projectDueDate;
     }
@@ -23,6 +27,7 @@ class project {
     getProjectToDoList = function(){
         return this.arr;
     }
+
 }
 
 

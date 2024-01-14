@@ -1,8 +1,25 @@
 import project from "../project/project";
-import { createElementDom, todayDate, getDueDateComp, insertHtml, appendProject } from "../functions/functions";
+import { createElementDom, todayDate, getDueDateComp, insertHtml, appendProject, lStorage, createToDoForm } from "../functions/functions";
 import { compareAsc } from "date-fns";
-import todo_item from "../todo_item/todo_item";
 
+class ProjectArr {
+    constructor(arr) {
+        this.arr = arr;
+    }
+
+    getArr(){
+        return this.arr;
+    }
+
+    addElmArr(elm){
+        this.arr.push(elm);
+    }
+
+    deleteArrElm(elm){
+        this.arr.splice(this.arr.indexOf(elm),1);
+    }
+
+}
 
 class myProject {
 
@@ -17,15 +34,15 @@ class myProject {
     getfunction = function(mainArr){
 
         const target = document.createElement("div");
+        target.setAttribute("id","my_projects_div");
         const head = createElementDom("div","class","content_head");
         head.textContent = this.name;
         target.appendChild(head);
         const projectsDiv = createElementDom("div","class","projects_div");
         target.appendChild(projectsDiv);
 
-        mainArr.forEach(element => {
-
-            projectsDiv.appendChild(appendProject(element));
+        mainArr.getArr().forEach((element,i) => {
+            projectsDiv.appendChild(appendProject(element, mainArr, i));
 
         });
         return target;
@@ -51,19 +68,22 @@ class today {
         const projectsDiv = createElementDom("div","class","projects_div");
         target.appendChild(projectsDiv);
 
-        mainArr.forEach(element =>{
+        mainArr.getArr().forEach((element,i) =>{
 
             if(compareAsc((todayDate()),(getDueDateComp(element.getProjectDueDate()))) == "0") {
-                const projectDiv = createElementDom("div","class","project_div")
-                projectsDiv.appendChild(projectDiv);
 
-                const name = createElementDom("div","class","project_name");
-                name.textContent = `${element.getProjectName()}`;
-                projectDiv.appendChild(name);
+                projectsDiv.appendChild(appendProject(element, mainArr, i));
 
-                const dueDate = createElementDom("div","class","project_dueDate")
-                dueDate.textContent = `${element.getProjectDueDate()}`
-                projectDiv.appendChild(dueDate);
+                // const projectDiv = createElementDom("div","class","project_div")
+                // projectsDiv.appendChild(projectDiv);
+
+                // const name = createElementDom("div","class","project_name");
+                // name.textContent = `${element.getProjectName()}`;
+                // projectDiv.appendChild(name);
+
+                // const dueDate = createElementDom("div","class","project_dueDate")
+                // dueDate.textContent = `${element.getProjectDueDate()}`
+                // projectDiv.appendChild(dueDate);
 
             }
 
@@ -92,19 +112,21 @@ class upcoming {
         const projectsDiv = createElementDom("div","class","projects_div");
         target.appendChild(projectsDiv);
 
-        mainArr.forEach(element =>{
+        mainArr.getArr().forEach((element,i) =>{
 
             if(compareAsc((todayDate()),(getDueDateComp(element.getProjectDueDate()))) == "-1") {
-                const projectDiv = createElementDom("div","class","project_div")
-                projectsDiv.appendChild(projectDiv);
 
-                const name = createElementDom("div","class","project_name");
-                name.textContent = `${element.getProjectName()}`;
-                projectDiv.appendChild(name);
+                projectsDiv.appendChild(appendProject(element, mainArr, i));
+                // const projectDiv = createElementDom("div","class","project_div")
+                // projectsDiv.appendChild(projectDiv);
 
-                const dueDate = createElementDom("div","class","project_dueDate")
-                dueDate.textContent = `${element.getProjectDueDate()}`
-                projectDiv.appendChild(dueDate);
+                // const name = createElementDom("div","class","project_name");
+                // name.textContent = `${element.getProjectName()}`;
+                // projectDiv.appendChild(name);
+
+                // const dueDate = createElementDom("div","class","project_dueDate")
+                // dueDate.textContent = `${element.getProjectDueDate()}`
+                // projectDiv.appendChild(dueDate);
 
             }
 
@@ -226,6 +248,7 @@ const CreateProjectFnc = (function(){
         insertHtml("#form_content", elms);
         const input1 = document.querySelector("#title");
         const input2 = document.querySelector("#due_date");
+        const input3 = document.querySelector("#notes");
         const fieldset = document.querySelector("#fieldset_project");
         const error = document.querySelector("#error");
         const btn = createElementDom("button","type","button");
@@ -238,82 +261,41 @@ const CreateProjectFnc = (function(){
             } else if (input2.value == ""){
                 error.textContent = "Please Add a Due Date";
             }    else {
-                createProject(input1.value,input2.value, mainArr);
+                createProject(input1.value,input2.value, input3.value, mainArr);
             }
         });
     }
     
-    function createProject(val1, val2, mainArr){
+    function createProject(val1, val2, val3, mainArr){
 
         const arr = [];
-        const prjct = new project(val1,val2, arr)
-        mainArr.push(prjct);
-        createTodoList(prjct);
-
+        const prjct = new project(val1,val2, val3,  arr)
+        mainArr.addElmArr(prjct);
+        const formDiv = document.querySelector("#form_content");
+        formDiv.textContent = "";
+        const projectName = createElementDom("div","class","project_name");
+        projectName.textContent = val1;
+        formDiv.appendChild(projectName);
+        const listDiv = createElementDom("div","class","list_div")
+        formDiv.appendChild(listDiv);
+        const todo_from_target = createElementDom("div","id","todo_form_target");
+        formDiv.appendChild(todo_from_target);
+        createTodoList(prjct, "#todo_form_target");
     }
     
-    function createTodoList(project) {
+    function createTodoList(project, container) {
 
-        const elms = 
-        `<div id="create_todo_form">
-            <form id="todo_form" action="#gh" method="post">
-                <fieldset id="fieldset_todo">
-                    <div class="in">
-                        <label for="todo_item_title" class="label">Things To Do</label>
-                        <input type="text" id="todo_item_title" minlength="5" maxlength="100">
-                    </div>
-                    <div class="in">
-                        <textarea rows="5" cols="60" id="todo_item_desc" placeholder = "Description"></textarea>
-                    </div>
-                    <span id="error" ></span>
-                </fieldset>
-            </form>
-        </div>`;
-        const target = document.querySelector("#form_content");
-        target.textContent = "";
-        insertHtml("#form_content",elms);
-        const input1 = document.querySelector("#todo_item_title");
-        const input2 = document.querySelector("#todo_item_desc");
-        const fieldset = document.querySelector("#fieldset_todo");
-        const error = document.querySelector("#error");
-        const btn = createElementDom("button","type","button");
-        fieldset.appendChild(btn);
-        btn.setAttribute("id","create_todo_btn");
-        btn.textContent = "Add";
-        const btn1 = createElementDom("button","type","button");
-        fieldset.appendChild(btn1);
-        btn1.setAttribute("id","done_btn");
-        btn1.textContent = "Done";
-        btn.addEventListener("click", () =>{
-
-            if(input1.value == ""){
-                error.textContent = "Please Add a thing to do";
-            } else {
-                const td = new todo_item(`${input1.value}`,`${input2.value}`);
-                project.addItem(td);
-                error.textContent = "";
-                createTodoList(project);
-            }
-
-        });
-
-        btn1.addEventListener("click", () =>{
-
-            formMessage();
-
-        });
-
+        createToDoForm(project,container, function(){formMessage(container, project)});
+        
     }
 
-    function formMessage(){
-        const target = document.querySelector("#page_content");
+    function formMessage(container,prjct){
+        lStorage.save(prjct);
+        const target = document.querySelector(container);
         target.textContent = "";
-        const formMsg = createElementDom("div","id","form_message");
-        formMsg.textContent = "The New Project Has been added to Your Projects";
-        target.appendChild(formMsg);
     }
     
-    return {createProjectForm};
+    return {createProjectForm, createTodoList};
 
 })();
 
@@ -332,4 +314,4 @@ const homeFnc = function(mainArr, ...links){
 
 };
 
-export  {search, upcoming, today, myProject, addProject ,navFnc, homeFnc, CreateProjectFnc}
+export  {search, upcoming, today, myProject, addProject, ProjectArr ,navFnc, homeFnc, CreateProjectFnc}
