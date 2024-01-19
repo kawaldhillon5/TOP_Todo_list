@@ -45,6 +45,28 @@ function appendList(element){
         listTitle.classList.add("project_input_edit");
         listTitle.setAttribute("readonly","readonly");
         listTitle.value = elm.getTitle();
+        const compBtn = createElementDom("input","type","checkbox");
+        compBtn.setAttribute("class","comp_checkbox");
+        compBtn.setAttribute("id",`list_${j}_input`);
+        listItem.appendChild(compBtn);
+        if (elm.completed === true) {
+            listItem.classList.add("item_completed");
+            compBtn.setAttribute("checked","checked");
+        }
+        compBtn.addEventListener("change", () => {
+            if(compBtn.checked){
+                listItem.classList.add("item_completed");
+                lStorage.deleteMyObj(element);
+                elm.completed = true;
+                lStorage.save(element);
+            }
+            else{
+                listItem.classList.remove("item_completed");
+                lStorage.deleteMyObj(element);
+                elm.completed = false;
+                lStorage.save(element);
+            }
+        });
         listItem.appendChild(listTitle);
         if(!(elm.getDesc() === "")){
             const listDesc = createElementDom("input","class","list_desc");
@@ -59,7 +81,8 @@ function appendList(element){
 }
 
 
-const formMessage = function(container){
+const formMessage = function(container, element){
+    lStorage.save(element);
     const target = document.querySelector(container);
     target.textContent = "";
     
@@ -105,6 +128,7 @@ function createToDoForm(project, container, func) {
             project.addItem(td);
             error.textContent = "";
             appendList(project);
+            lStorage.deleteMyObj(project);
             createToDoForm(project,container,func);
         }
 
@@ -188,7 +212,7 @@ function displayProject(element, mainArr, i, container) {
     addTodo.addEventListener("click",(e) =>{
         e.stopPropagation();
         addTodo.classList.add("active");
-        createToDoForm(element,"#todo_form_target",function(){formMessage("#todo_form_target")});
+        createToDoForm(element,"#todo_form_target",function(){formMessage("#todo_form_target", element)});
        
     });
 
@@ -261,7 +285,7 @@ const lStorage = (function(){
             if(!(localStorage.key(i) == "")){
                 const myObj = JSON.parse(localStorage.getItem(localStorage.key(i)));
                 let todoArr = [];
-                myObj.arr.forEach((item, i )=> {todoArr[i] = new todo_item(item.title, item.desc)});
+                myObj.arr.forEach((item, i )=> {todoArr[i] = new todo_item(item.title, item.desc, item.completed)});
                 array[i] = new project(myObj.name, myObj.projectDueDate, myObj.notes, todoArr);
             }
         }
