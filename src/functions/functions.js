@@ -34,11 +34,12 @@ function getDueDateComp(date){
     return date =   `${year}/${month}/${day}`; 
 }
 
-function appendList(element){
+function appendList(element,checkShow){
     const listDiv = document.querySelector(".list_div");
     listDiv.textContent = "";
     element.getProjectToDoList().forEach((elm, j) => {
         const listItem = createElementDom("div","class","list_item");
+        listItem.setAttribute("id",`list_${j}`)
         listDiv.appendChild(listItem);
         const listTitle = createElementDom("input", "class", "listName");
         listTitle.setAttribute("id",`list_${j}_name`);
@@ -48,7 +49,9 @@ function appendList(element){
         const compBtn = createElementDom("input","type","checkbox");
         compBtn.setAttribute("class","comp_checkbox");
         compBtn.setAttribute("id",`list_${j}_input`);
-        listItem.appendChild(compBtn);
+        if(checkShow === true){
+            listItem.appendChild(compBtn);
+        }
         if (elm.completed === true) {
             listItem.classList.add("item_completed");
             compBtn.setAttribute("checked","checked");
@@ -88,7 +91,7 @@ const formMessage = function(container, element){
     
 }
 
-function createToDoForm(project, container, func) {
+function createToDoForm(project, container, func, checkShow) {
     const elms = 
     `<div id="create_todo_form">
         <form id="todo_form" action="#gh" method="post">
@@ -127,9 +130,9 @@ function createToDoForm(project, container, func) {
             const td = new todo_item(`${input1.value}`,`${input2.value}`);
             project.addItem(td);
             error.textContent = "";
-            appendList(project);
+            appendList(project, checkShow);
             lStorage.deleteMyObj(project);
-            createToDoForm(project,container,func);
+            createToDoForm(project,container,func, checkShow);
         }
 
     });
@@ -150,13 +153,13 @@ function appendProject(element , mainArr, i){
     dueDate.textContent = `${element.getProjectDueDate()}`;
     projectDiv.appendChild(dueDate);
        
-    projectDiv.addEventListener("click", () => {displayProject(element, mainArr , i, "#page_content")});
+    projectDiv.addEventListener("click", () => {displayProject(element, mainArr , i, "#page_content", true)});
 
     return projectDiv;
 
 }
 
-function displayProject(element, mainArr, i, container) {
+function displayProject(element, mainArr, i, container, checkShow) {
     const page = document.querySelector(container);
     page.textContent = "";
     const projectDiv = createElementDom("div","class","project_div_full")
@@ -205,14 +208,16 @@ function displayProject(element, mainArr, i, container) {
     confirmDiv.appendChild(diaText);
     confirmDiv.appendChild(diaYes);
     confirmDiv.appendChild(diaNo);
-    appendList(element);
+    appendList(element, checkShow);
+    const errorDiv = createElementDom("div","id","error_msg");
+    projectDiv.appendChild(errorDiv);
     const formTarget = createElementDom("div","id","todo_form_target");
     projectDiv.appendChild(formTarget);
 
     addTodo.addEventListener("click",(e) =>{
         e.stopPropagation();
         addTodo.classList.add("active");
-        createToDoForm(element,"#todo_form_target",function(){formMessage("#todo_form_target", element)});
+        createToDoForm(element,"#todo_form_target",function(){formMessage("#todo_form_target", element), true});
        
     });
 
@@ -228,27 +233,71 @@ function displayProject(element, mainArr, i, container) {
             arr.forEach((con) => {
                 con.removeAttribute("readonly");
             });
+            const listArr = document.querySelectorAll(".list_item");
+            listArr.forEach((elm,j) =>{
+                const itemDeleteBtn = createElementDom("button","class","item_delete_btn");
+                itemDeleteBtn.textContent = "Delete"; 
+                itemDeleteBtn.addEventListener("click", () =>{
+                    const item = document.querySelector(`#list_${j}`);
+                    const prjctArr = element.getProjectToDoList();
+                    listDiv.removeChild(item);
+                    prjctArr.splice(prjctArr[j],1);
+                    lStorage.save(element);
+                });
+                elm.appendChild(itemDeleteBtn);
+            });
 
         } else {
-            lStorage.deleteMyObj(element);
+            const listArr = document.querySelectorAll(".list_item");
+            listArr.forEach((elm,j) =>{
+                const btn = document.querySelector(".item_delete_btn");
+                elm.removeChild(btn);
+            });
             edit.classList.remove("active");
             const arr = document.querySelectorAll(".project_input_edit");
             arr.forEach((con) => {
                 con.setAttribute("readonly","readonly");
             });
+            errorDiv.textContent = "";
             const nameEdit = document.querySelector(`#project_${i}_name`);
             const dueDateEdit = document.querySelector(`#project_${i}_dueDate`);
+            if(nameEdit.value === ""){
+                nameEdit.value = element.name;
+                errorDiv.textContent = "Title is not Valid";
+            } else {
+                element.name = nameEdit.value;
+            }
+            if((dueDateEdit.value === "") || (getDueDateComp(dueDateEdit.value) < todayDate())){
+                dueDateEdit.value = element.dueDate;
+                errorDiv.textContent = "Due date is not Valid";
+            } else {
+                element.dueDate = dueDateEdit.value;
+            }
             const notesEdit = document.querySelector(`#project_${i}_notes`);
-            element.name = nameEdit.value;
-            element.dueDate = dueDateEdit.value;
-            element.notes =  notesEdit.value
+            if (notesEdit.value === "") {projectDiv.removeChild(notesEdit);}
+            if(!(notesEdit === null)){
+                element.notes =  notesEdit.value
+            }
             element.getProjectToDoList().forEach((elmEdit,j) => {
 
                 const titleEdit = document.querySelector(`#list_${j}_name`);
                 const descEdit = document.querySelector(`#list_${j}_desc`);
-                elmEdit.title = titleEdit.value;
-                elmEdit.desc = descEdit.value;
-
+                if(!(titleEdit === null)){
+                    if(titleEdit.value === ""){
+                        titleEdit.value = elmEdit.title;
+                        errorDiv.textContent = "Item Title cannot be Empty";
+                    }
+                    elmEdit.title = titleEdit.value;
+                }
+                if(!(descEdit === null)) {
+                    if (descEdit.value === "") {
+                        const listItem = document.querySelector(`#list_${i}`)
+                        listItem.removeChild(descEdit);
+                        elmEdit.desc ="";
+                    } else {
+                        elmEdit.desc = descEdit.value;
+                    }
+                }
             });
             lStorage.save(element);
             edit.textContent = "Edit";  

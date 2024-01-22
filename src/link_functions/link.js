@@ -43,7 +43,6 @@ class myProject {
 
         mainArr.getArr().forEach((element,i) => {
             projectsDiv.appendChild(appendProject(element, mainArr, i));
-
         });
         return target;
     }
@@ -71,20 +70,7 @@ class today {
         mainArr.getArr().forEach((element,i) =>{
 
             if(compareAsc((todayDate()),(getDueDateComp(element.getProjectDueDate()))) == "0") {
-
                 projectsDiv.appendChild(appendProject(element, mainArr, i));
-
-                // const projectDiv = createElementDom("div","class","project_div")
-                // projectsDiv.appendChild(projectDiv);
-
-                // const name = createElementDom("div","class","project_name");
-                // name.textContent = `${element.getProjectName()}`;
-                // projectDiv.appendChild(name);
-
-                // const dueDate = createElementDom("div","class","project_dueDate")
-                // dueDate.textContent = `${element.getProjectDueDate()}`
-                // projectDiv.appendChild(dueDate);
-
             }
 
         });
@@ -115,19 +101,7 @@ class upcoming {
         mainArr.getArr().forEach((element,i) =>{
 
             if(compareAsc((todayDate()),(getDueDateComp(element.getProjectDueDate()))) == "-1") {
-
                 projectsDiv.appendChild(appendProject(element, mainArr, i));
-                // const projectDiv = createElementDom("div","class","project_div")
-                // projectsDiv.appendChild(projectDiv);
-
-                // const name = createElementDom("div","class","project_name");
-                // name.textContent = `${element.getProjectName()}`;
-                // projectDiv.appendChild(name);
-
-                // const dueDate = createElementDom("div","class","project_dueDate")
-                // dueDate.textContent = `${element.getProjectDueDate()}`
-                // projectDiv.appendChild(dueDate);
-
             }
 
         });
@@ -258,8 +232,8 @@ const CreateProjectFnc = (function(){
         btn.addEventListener("click",() => {
             if(input1.value == ""){
                 error.textContent = "Please Add a Title";
-            } else if (input2.value == ""){
-                error.textContent = "Please Add a Due Date";
+            } else if ((input2.value == "") || (getDueDateComp(input2.value) < todayDate())){
+                error.textContent = "Please Add a Valid Due Date";
             }    else {
                 createProject(input1.value,input2.value, input3.value, mainArr);
             }
@@ -285,7 +259,7 @@ const CreateProjectFnc = (function(){
     
     function createTodoList(project, container) {
 
-        createToDoForm(project,container, function(){formMessage(container, project)});
+        createToDoForm(project,container, function(){formMessage(container, project), false});
         
     }
 
