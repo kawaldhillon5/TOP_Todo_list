@@ -1,4 +1,4 @@
-import { add, format } from "date-fns";
+import { format, isDate } from "date-fns";
 import todo_item from "../todo_item/todo_item";
 import project from "../project/project";
 
@@ -274,9 +274,9 @@ function displayProject(element, mainArr, i, container, checkShow) {
                 element.dueDate = dueDateEdit.value;
             }
             const notesEdit = document.querySelector(`#project_${i}_notes`);
-            if (notesEdit.value === "") {projectDiv.removeChild(notesEdit);}
             if(!(notesEdit === null)){
                 element.notes =  notesEdit.value
+                if (notesEdit.value === "") {projectDiv.removeChild(notesEdit);}
             }
             element.getProjectToDoList().forEach((elmEdit,j) => {
 

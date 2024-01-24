@@ -1,6 +1,6 @@
 import project from "../project/project";
 import { createElementDom, todayDate, getDueDateComp, insertHtml, appendProject, lStorage, createToDoForm } from "../functions/functions";
-import { compareAsc } from "date-fns";
+import { compareAsc, isValid } from "date-fns";
 
 class ProjectArr {
     constructor(arr) {
@@ -62,6 +62,7 @@ class today {
     getfunction = function(mainArr){
         const target = document.createElement("div");
         const head = createElementDom("div","class","content_head");
+        target.setAttribute("id","today_projects_div");
         head.textContent = this.name;
         target.appendChild(head);
         const projectsDiv = createElementDom("div","class","projects_div");
@@ -92,6 +93,7 @@ class upcoming {
 
     getfunction = function(mainArr){
         const target = document.createElement("div");
+        target.setAttribute("id","upcoming_projects_div");
         const head = createElementDom("div","class","content_head");
         head.textContent = this.name;
         target.appendChild(head);
@@ -122,12 +124,46 @@ class search {
     }
 
     getfunction = function(mainArr){
+
         const target = document.createElement("div");
+        target.setAttribute("id","search_maina_div");
         const head = createElementDom("div","class","content_head");
         head.textContent = this.name;
         target.appendChild(head);
-
-
+        const searchForm = createElementDom("form","id","search_from");
+        const searchInput = createElementDom("input","type","search");
+        searchInput.setAttribute("placeholder","Enter a Keyword");
+        target.appendChild(searchForm);
+        searchForm.appendChild(searchInput);
+        const searchBtn =createElementDom("button","type","button");
+        searchBtn.textContent = "Search";
+        searchForm.appendChild(searchBtn)
+        const projectsDiv = createElementDom("div","id","projects_div");
+        target.appendChild(projectsDiv);
+        searchBtn.addEventListener("click", () => {
+            projectsDiv.textContent = "";
+            let serachArr = [];
+            const searchValue = new RegExp(searchInput.value, "gi");
+            mainArr.getArr().forEach((elm) => {
+                const arr = elm.getProjectToDoList();
+                let found = false
+                arr.forEach((item) =>{
+                if((searchValue.test(item.getTitle())) || (searchValue.test(item.getDesc()))){found = true;}
+                });
+                if(searchValue.test(elm.name) || (searchValue.test(elm.notes))|| found) {
+                    serachArr.push(elm);
+                }
+            });
+            if((serachArr.length) >= 1) {
+                serachArr.forEach((elm,i) => {               
+                    projectsDiv.appendChild(appendProject(elm, serachArr, i));
+                });
+            } else {
+                const errorMsg = createElementDom("span","id","error_msg");
+                errorMsg.textContent = "No Projects Found"
+                projectsDiv.appendChild(errorMsg);
+            }
+        });
         return target;
     }
     
