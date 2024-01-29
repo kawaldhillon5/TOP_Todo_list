@@ -1,12 +1,12 @@
 import "./project.css";
 
 class project {
-    constructor(name,projectDueDate,notes,arr){
+    constructor(name,projectDueDate,notes,arr, id){
         this.name = name;
         this.projectDueDate = projectDueDate;
         this.notes = notes;
         this.arr = arr;
-        
+        this.id = id;
     }
     addItem = function(Todo_item){
         this.arr.push(Todo_item);

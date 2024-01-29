@@ -4,6 +4,11 @@ import { compareAsc, isValid } from "date-fns";
 
 class ProjectArr {
     constructor(arr) {
+        if(localStorage.getItem("defaultId")){
+            this.idDefault = localStorage.getItem("defaultId");    
+        } else {   
+            this.idDefault = 1000;
+        }
         this.arr = arr;
     }
 
@@ -65,13 +70,17 @@ class today {
         target.setAttribute("id","today_projects_div");
         head.textContent = this.name;
         target.appendChild(head);
-        const projectsDiv = createElementDom("div","class","projects_div");
-        target.appendChild(projectsDiv);
-
+        const projectsTodayDiv = createElementDom("div","class","projects_div");
+        const projectsPastDiv = createElementDom("div","class","projects_div");
+        projectsPastDiv.classList.add("past_projects");
+        target.appendChild(projectsTodayDiv);
+        target.appendChild(projectsPastDiv)
         mainArr.getArr().forEach((element,i) =>{
 
             if(compareAsc((todayDate()),(getDueDateComp(element.getProjectDueDate()))) == "0") {
-                projectsDiv.appendChild(appendProject(element, mainArr, i));
+                projectsTodayDiv.appendChild(appendProject(element, mainArr, i));
+            } else if (compareAsc((todayDate()),(getDueDateComp(element.getProjectDueDate()))) == "1") {
+                projectsPastDiv.appendChild(appendProject(element, mainArr, i));
             }
 
         });
@@ -99,7 +108,6 @@ class upcoming {
         target.appendChild(head);
         const projectsDiv = createElementDom("div","class","projects_div");
         target.appendChild(projectsDiv);
-
         mainArr.getArr().forEach((element,i) =>{
 
             if(compareAsc((todayDate()),(getDueDateComp(element.getProjectDueDate()))) == "-1") {
@@ -279,8 +287,10 @@ const CreateProjectFnc = (function(){
     function createProject(val1, val2, val3, mainArr){
 
         const arr = [];
-        const prjct = new project(val1,val2, val3,  arr)
+        const prjct = new project(val1,val2, val3,  arr, mainArr.idDefault)
         mainArr.addElmArr(prjct);
+        mainArr.idDefault = Number(`${mainArr.idDefault}`) + 1;
+        localStorage.setItem("defaultId",`${mainArr.idDefault}`);
         const formDiv = document.querySelector("#form_content");
         formDiv.textContent = "";
         const projectName = createElementDom("div","class","project_name");

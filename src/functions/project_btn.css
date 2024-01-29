@@ -1,0 +1,10 @@
+
+#btns_div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.btn_div {
+    display: none;
+}

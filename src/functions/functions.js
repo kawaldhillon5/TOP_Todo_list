@@ -190,8 +190,12 @@ function displayProject(element, mainArr, i, container, checkShow) {
     edit.textContent = "Edit";
     const deleteProject = createElementDom("button","class","delete_btn");
     deleteProject.textContent = 'Delete';
-    const btnDiv = createElementDom("div","id","btn_div")
-    projectDiv.appendChild(btnDiv);
+    const btnsDiv = createElementDom("div","id","btns_div")
+    projectDiv.appendChild(btnsDiv);
+    btnsDiv.textContent = "..."
+    const btnDiv = createElementDom("div","class", "btn_div");
+    btnDiv.classList.add("non_active");
+    btnsDiv.appendChild(btnDiv);
     btnDiv.appendChild(addTodo);
     btnDiv.appendChild(edit);
     btnDiv.appendChild(deleteProject);
@@ -213,41 +217,21 @@ function displayProject(element, mainArr, i, container, checkShow) {
     projectDiv.appendChild(errorDiv);
     const formTarget = createElementDom("div","id","todo_form_target");
     projectDiv.appendChild(formTarget);
+    let btnsDivState = true;
 
-    addTodo.addEventListener("click",(e) =>{
-        e.stopPropagation();
-        addTodo.classList.add("active");
-        createToDoForm(element,"#todo_form_target",function(){formMessage("#todo_form_target", element), true});
-       
-    });
-
-    edit.addEventListener("click", (e) => {
-
-        e.stopPropagation();
-        if(edit.innerText == "Edit"){
-            edit.classList.add("active");
-            edit.textContent  = "Save";
-            const todo_form = document.querySelector("#todo_form_target");
-            todo_form.textContent = "";
-            const arr = document.querySelectorAll(".project_input_edit");
-            arr.forEach((con) => {
-                con.removeAttribute("readonly");
-            });
-            const listArr = document.querySelectorAll(".list_item");
-            listArr.forEach((elm,j) =>{
-                const itemDeleteBtn = createElementDom("button","class","item_delete_btn");
-                itemDeleteBtn.textContent = "Delete"; 
-                itemDeleteBtn.addEventListener("click", () =>{
-                    const item = document.querySelector(`#list_${j}`);
-                    const prjctArr = element.getProjectToDoList();
-                    listDiv.removeChild(item);
-                    prjctArr.splice(prjctArr[j],1);
-                    lStorage.save(element);
-                });
-                elm.appendChild(itemDeleteBtn);
-            });
-
-        } else {
+    btnsDiv.addEventListener("click", () => {
+        if(btnsDivState === true){
+            if(btnDiv.classList.contains("non_active")){
+                btnDiv.classList.remove("non_active");
+                btnDiv.classList.add("active");
+            } else {
+                btnDiv.classList.add("non_active");
+                btnDiv.classList.remove("active");
+            }
+        } else if(btnsDivState === false) {
+            btnsDiv.innerText = "...";
+            btnsDiv.appendChild(btnDiv);
+            btnsDivState = true;
             const listArr = document.querySelectorAll(".list_item");
             listArr.forEach((elm,j) =>{
                 const btn = document.querySelector(".item_delete_btn");
@@ -300,8 +284,44 @@ function displayProject(element, mainArr, i, container, checkShow) {
                 }
             });
             lStorage.save(element);
-            edit.textContent = "Edit";  
         }
+    });
+
+    addTodo.addEventListener("click",(e) =>{
+        e.stopPropagation();
+        btnDiv.classList.add("non_active");
+        btnDiv.classList.remove("active");
+        createToDoForm(element,"#todo_form_target",function(){formMessage("#todo_form_target", element), true});
+       
+    });
+
+    edit.addEventListener("click", (e) => {
+        e.stopPropagation();
+        btnDiv.classList.add("non_active");
+        btnDiv.classList.remove("active");
+        edit.classList.add("active");
+        btnsDiv.textContent  = "Save";
+        btnsDivState = false;
+        btnsDiv.appendChild(btnDiv);
+        const todo_form = document.querySelector("#todo_form_target");
+        todo_form.textContent = "";
+        const arr = document.querySelectorAll(".project_input_edit");
+        arr.forEach((con) => {
+            con.removeAttribute("readonly");
+        });
+        const listArr = document.querySelectorAll(".list_item");
+        listArr.forEach((elm,j) =>{
+            const itemDeleteBtn = createElementDom("button","class","item_delete_btn");
+            itemDeleteBtn.textContent = "Delete"; 
+            itemDeleteBtn.addEventListener("click", () =>{
+                const item = document.querySelector(`#list_${j}`);
+                const prjctArr = element.getProjectToDoList();
+                listDiv.removeChild(item);
+                prjctArr.splice(prjctArr[j],1);
+                lStorage.save(element);
+            });
+            elm.appendChild(itemDeleteBtn);
+        });
     });
 
     deleteProject.addEventListener("click", (e) =>{
@@ -325,12 +345,12 @@ const lStorage = (function(){
 
     const save = function(prjct){
         const myObj = JSON.stringify(prjct);
-        localStorage.setItem(`${prjct.getProjectName()}`,myObj);
+        localStorage.setItem(`${prjct.id}`,myObj);
     }
 
     const load = function(){
         let array = [];
-        for (let i = 0; i < localStorage.length; i++) {
+        for (let i = 1; i < localStorage.length; i++) {
             if(!(localStorage.key(i) == "")){
                 const myObj = JSON.parse(localStorage.getItem(localStorage.key(i)));
                 let todoArr = [];
@@ -342,7 +362,7 @@ const lStorage = (function(){
     }
 
     const deleteMyObj = function(prjct){
-        localStorage.removeItem(`${prjct.getProjectName()}`);
+        localStorage.removeItem(`${prjct.id}`);
     } 
 
     return {save, load, deleteMyObj};
