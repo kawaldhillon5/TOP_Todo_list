@@ -291,7 +291,7 @@ function displayProject(element, mainArr, i, container, checkShow) {
         e.stopPropagation();
         btnDiv.classList.add("non_active");
         btnDiv.classList.remove("active");
-        createToDoForm(element,"#todo_form_target",function(){formMessage("#todo_form_target", element), true});
+        createToDoForm(element,"#todo_form_target",function(){formMessage("#todo_form_target", element)}, true);
        
     });
 

@@ -1,14 +1,12 @@
 .list_div{
+    grid-area: 3/1/4/4;
     overflow: auto;
     display: grid;
     gap: 4px;
-    grid-template-rows: repeat(1, 1fr);
-    grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
     padding: 10px;
-    margin-left: 10px;
 }
 
-.list_item {
+/* .list_item {
     display: flex;
     flex-direction: column;
     justify-content: left;
@@ -17,10 +15,21 @@
 .list_desc{
     margin-left: 20px;
     font-size: 13px;
-}
+} */
 
 
 .item_completed>input {
     text-decoration: line-through;
     color: rgba(0, 0, 0, 0.398);
+}
+
+.listName{
+    font-size: 20px;
+    grid-area: 1/1/2/2;
+}
+
+.comp_checkbox {
+    max-height: 13px;
+    max-width: 13px;
+    border: 1px solid black;
 }
