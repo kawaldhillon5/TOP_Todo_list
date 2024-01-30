@@ -1,6 +1,7 @@
 import { format, isDate } from "date-fns";
 import todo_item from "../todo_item/todo_item";
 import project from "../project/project";
+import { ProjectArr } from "../link_functions/link";
 
 
 const createElementDom = function (type, attribute, attributeName){
@@ -219,7 +220,8 @@ function displayProject(element, mainArr, i, container, checkShow) {
     projectDiv.appendChild(formTarget);
     let btnsDivState = true;
 
-    btnsDiv.addEventListener("click", () => {
+    btnsDiv.addEventListener("click", (e) => {
+        e.stopPropagation();
         if(btnsDivState === true){
             if(btnDiv.classList.contains("non_active")){
                 btnDiv.classList.remove("non_active");
@@ -350,19 +352,35 @@ const lStorage = (function(){
 
     const load = function(){
         let array = [];
-        for (let i = 1; i < localStorage.length; i++) {
+        let id = 0;
+        let j = 0;
+        for (let i = 0; i < localStorage.length; i++) {
             if(!(localStorage.key(i) == "")){
-                const myObj = JSON.parse(localStorage.getItem(localStorage.key(i)));
-                let todoArr = [];
-                myObj.arr.forEach((item, i )=> {todoArr[i] = new todo_item(item.title, item.desc, item.completed)});
-                array[i] = new project(myObj.name, myObj.projectDueDate, myObj.notes, todoArr);
+                if(localStorage.key(i) === "defaultId") {
+                    id = Number(localStorage.getItem(localStorage.key(i)));
+                } else {
+                    const myObj = JSON.parse(localStorage.getItem(localStorage.key(i)));
+                    let todoArr = [];
+                    myObj.arr.forEach((item, i )=> {todoArr[i] = new todo_item(item.title, item.desc, item.completed)});
+                    array[j] = new project(myObj.name, myObj.projectDueDate, myObj.notes, todoArr, myObj.id);
+                    j = j+1;
+                }
+            } else {
+                array = [];
+                id = 1000;
             }
         }
-        return array;
+        if(id == 0) {
+            localStorage.setItem("defaultId", `${1000}`);
+            id = 1000;
+        }
+        const prjctArr = new ProjectArr(array, id)
+        return prjctArr;
     }
 
     const deleteMyObj = function(prjct){
         localStorage.removeItem(`${prjct.id}`);
+        console.log(`${prjct.id}`)
     } 
 
     return {save, load, deleteMyObj};

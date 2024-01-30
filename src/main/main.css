@@ -202,7 +202,6 @@ a{
     width: auto;
     will-change: transform,opacity;
     z-index: 0;
-    margin-left: 20px
 }
 
 #fieldset_project .in, textarea {

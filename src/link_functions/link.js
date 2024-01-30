@@ -1,14 +1,10 @@
 import project from "../project/project";
 import { createElementDom, todayDate, getDueDateComp, insertHtml, appendProject, lStorage, createToDoForm } from "../functions/functions";
-import { compareAsc, isValid } from "date-fns";
+import { compareAsc } from "date-fns";
 
 class ProjectArr {
-    constructor(arr) {
-        if(localStorage.getItem("defaultId")){
-            this.idDefault = localStorage.getItem("defaultId");    
-        } else {   
-            this.idDefault = 1000;
-        }
+    constructor(arr,id) {
+        this.idDefault = id;
         this.arr = arr;
     }
 

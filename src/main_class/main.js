@@ -4,8 +4,7 @@ import { lStorage } from "../functions/functions";
 
 
 const Main = (function(){
-    const arr = lStorage.load();
-    const projectArr = new ProjectArr(arr);
+    const projectArr = lStorage.load();
     let navHead = "Home";
     const link0 = new addProject("Add Project");
     const link1 = new myProject("My Projects") 
