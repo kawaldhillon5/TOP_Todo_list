@@ -191,9 +191,11 @@ function displayProject(element, mainArr, i, container, checkShow) {
     edit.textContent = "Edit";
     const deleteProject = createElementDom("button","class","delete_btn");
     deleteProject.textContent = 'Delete';
-    const btnsDiv = createElementDom("div","id","btns_div")
+    const btnsDiv = createElementDom("div","id","btns_div");
     projectDiv.appendChild(btnsDiv);
-    btnsDiv.textContent = "..."
+    const dropBtn = createElementDom("button","class","drop_btn");
+    dropBtn.textContent = "..."
+    btnsDiv.appendChild(dropBtn);
     const btnDiv = createElementDom("div","class", "btn_div");
     btnDiv.classList.add("non_active");
     btnsDiv.appendChild(btnDiv);
@@ -220,7 +222,7 @@ function displayProject(element, mainArr, i, container, checkShow) {
     projectDiv.appendChild(formTarget);
     let btnsDivState = true;
 
-    btnsDiv.addEventListener("click", (e) => {
+    dropBtn.addEventListener("click", (e) => {
         e.stopPropagation();
         if(btnsDivState === true){
             if(btnDiv.classList.contains("non_active")){
@@ -231,7 +233,7 @@ function displayProject(element, mainArr, i, container, checkShow) {
                 btnDiv.classList.remove("active");
             }
         } else if(btnsDivState === false) {
-            btnsDiv.innerText = "...";
+            dropBtn.innerText = "...";
             btnsDiv.appendChild(btnDiv);
             btnsDivState = true;
             const listArr = document.querySelectorAll(".list_item");
@@ -302,7 +304,7 @@ function displayProject(element, mainArr, i, container, checkShow) {
         btnDiv.classList.add("non_active");
         btnDiv.classList.remove("active");
         edit.classList.add("active");
-        btnsDiv.textContent  = "Save";
+        dropBtn.textContent  = "Save";
         btnsDivState = false;
         btnsDiv.appendChild(btnDiv);
         const todo_form = document.querySelector("#todo_form_target");
